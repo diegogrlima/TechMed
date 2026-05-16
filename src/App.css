@@ -1,0 +1,115 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #f4f7fb;
+  color: #1f2937;
+}
+
+.app-sidebar {
+  width: 280px;
+  flex: 0 0 280px;
+  min-height: 100vh;
+  padding: 24px 18px;
+  background: #ffffff;
+  border-right: 1px solid #d9e2ef;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #0d6efd;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.sidebar-brand strong,
+.sidebar-brand small {
+  display: block;
+}
+
+.sidebar-brand small {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.sidebar-nav {
+  gap: 8px;
+}
+
+.sidebar-link {
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.sidebar-link:hover {
+  background: #eef5ff;
+  color: #0d6efd;
+}
+
+.sidebar-link.active {
+  background: #0d6efd;
+}
+
+.app-main {
+  flex: 1;
+  padding: 36px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header span {
+  color: #0d6efd;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.page-header h1 {
+  margin: 6px 0 8px;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.page-header p {
+  max-width: 680px;
+  margin: 0;
+  color: #64748b;
+}
+
+.content-card {
+  border: 1px solid #d9e2ef;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    flex-basis: auto;
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid #d9e2ef;
+  }
+
+  .app-main {
+    padding: 24px 16px;
+  }
+}

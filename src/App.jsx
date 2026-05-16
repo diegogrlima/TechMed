@@ -1,11 +1,12 @@
-import { Button } from "react-bootstrap";
+import { BrowserRouter } from "react-router";
+import AppRoutes from "./routes/AppRoutes";
 import "./App.css";
 
 function App() {
   return (
-    <>
-      <Button variant="primary">Primary</Button>
-    </>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
 
