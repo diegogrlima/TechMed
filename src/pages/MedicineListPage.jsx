@@ -1,11 +1,23 @@
-import { useState } from "react";
-import { Badge, Button, ButtonGroup, Card, Form, Modal, Table } from "react-bootstrap";
+import { useMemo, useState } from "react";
+import { Badge, Button, ButtonGroup, Card, Form, Modal, Pagination, Table } from "react-bootstrap";
 import { deleteMedicine, loadMedicines, updateMedicine } from "../data/medicineStorage";
+
+const ITEMS_PER_PAGE = 5;
 
 function MedicineListPage() {
   const [medicineList, setMedicineList] = useState(loadMedicines);
+  const [currentPage, setCurrentPage] = useState(1);
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [deletingMedicine, setDeletingMedicine] = useState(null);
+
+  const shouldPaginate = medicineList.length > ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(medicineList.length / ITEMS_PER_PAGE);
+  const pageStartIndex = shouldPaginate ? (currentPage - 1) * ITEMS_PER_PAGE : 0;
+  const pageEndIndex = shouldPaginate ? pageStartIndex + ITEMS_PER_PAGE : medicineList.length;
+  const visibleMedicines = useMemo(
+    () => medicineList.slice(pageStartIndex, pageEndIndex),
+    [medicineList, pageEndIndex, pageStartIndex],
+  );
 
   const handleEditChange = (field, value) => {
     setEditingMedicine((currentMedicine) => ({
@@ -20,7 +32,11 @@ function MedicineListPage() {
   };
 
   const confirmDeleteMedicine = () => {
-    setMedicineList(deleteMedicine(deletingMedicine.id));
+    const updatedMedicines = deleteMedicine(deletingMedicine.id);
+    const updatedTotalPages = Math.ceil(updatedMedicines.length / ITEMS_PER_PAGE);
+
+    setMedicineList(updatedMedicines);
+    setCurrentPage((page) => Math.min(page, Math.max(updatedTotalPages, 1)));
     setDeletingMedicine(null);
   };
 
@@ -46,7 +62,7 @@ function MedicineListPage() {
                   </td>
                 </tr>
               ) : (
-                medicineList.map((medicine) => (
+                visibleMedicines.map((medicine) => (
                   <tr key={medicine.id}>
                     <td>{medicine.name}</td>
                     <td>{medicine.dose}</td>
@@ -74,6 +90,37 @@ function MedicineListPage() {
               )}
             </tbody>
           </Table>
+          {shouldPaginate && (
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mt-4">
+              <span className="text-muted">
+                Mostrando {pageStartIndex + 1}-{Math.min(pageEndIndex, medicineList.length)} de{" "}
+                {medicineList.length} medicamentos
+              </span>
+              <Pagination className="mb-0">
+                <Pagination.Prev
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
+                />
+                {Array.from({ length: totalPages }, (_, index) => {
+                  const page = index + 1;
+
+                  return (
+                    <Pagination.Item
+                      key={page}
+                      active={page === currentPage}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Pagination.Item>
+                  );
+                })}
+                <Pagination.Next
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
+                />
+              </Pagination>
+            </div>
+          )}
         </Card.Body>
       </Card>
 
