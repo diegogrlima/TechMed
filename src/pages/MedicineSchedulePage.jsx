@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Badge, Button, Card, Col, Pagination, Row } from "react-bootstrap";
+import { Badge, Button, Card, Col, Modal, Pagination, Row } from "react-bootstrap";
 import { loadMedicines, updateMedicine } from "../data/medicineStorage";
 
 const ITEMS_PER_PAGE = 6;
@@ -9,6 +9,10 @@ function getMinutesFromTime(time) {
   const [hours, minutes] = time.split(":").map(Number);
 
   return hours * 60 + minutes;
+}
+
+function getFormattedCurrentTime(currentTime) {
+  return currentTime.toTimeString().slice(0, 5);
 }
 
 function getTimeUntilMedicine(medicineTime, currentTime) {
@@ -40,8 +44,10 @@ function MedicineSchedulePage() {
   const [scheduleMedicines, setScheduleMedicines] = useState(loadMedicines);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentTime, setCurrentTime] = useState(() => new Date());
+  const [dismissedMedicineAlerts, setDismissedMedicineAlerts] = useState([]);
 
   const shouldPaginate = scheduleMedicines.length > ITEMS_PER_PAGE;
+  const formattedCurrentTime = getFormattedCurrentTime(currentTime);
   const totalPages = Math.ceil(scheduleMedicines.length / ITEMS_PER_PAGE);
   const pageStartIndex = shouldPaginate ? (currentPage - 1) * ITEMS_PER_PAGE : 0;
   const pageEndIndex = shouldPaginate ? pageStartIndex + ITEMS_PER_PAGE : scheduleMedicines.length;
@@ -69,6 +75,16 @@ function MedicineSchedulePage() {
       })
       .sort((firstMedicine, secondMedicine) => firstMedicine.minutesUntil - secondMedicine.minutesUntil)[0];
   }, [currentTime, scheduleMedicines]);
+  const alertMedicines = useMemo(
+    () =>
+      scheduleMedicines.filter(
+        (medicine) =>
+          medicine.status !== "Tomado" &&
+          medicine.time === formattedCurrentTime &&
+          !dismissedMedicineAlerts.includes(`${medicine.id}-${formattedCurrentTime}`),
+      ),
+    [dismissedMedicineAlerts, formattedCurrentTime, scheduleMedicines],
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -86,6 +102,13 @@ function MedicineSchedulePage() {
     }
 
     setScheduleMedicines(updateMedicine({ ...medicineToUpdate, status: "Tomado" }));
+  };
+
+  const dismissMedicineAlert = () => {
+    setDismissedMedicineAlerts((currentAlerts) => [
+      ...currentAlerts,
+      ...alertMedicines.map((medicine) => `${medicine.id}-${formattedCurrentTime}`),
+    ]);
   };
 
   return (
@@ -202,6 +225,35 @@ function MedicineSchedulePage() {
           </Pagination>
         </div>
       )}
+
+      <Modal show={alertMedicines.length > 0} onHide={dismissMedicineAlert} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Horario do medicamento</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="medicine-alert-intro">
+            Existe medicamento pendente para tomar agora, as {formattedCurrentTime}.
+          </p>
+          <div className="medicine-alert-list">
+            {alertMedicines.map((medicine) => (
+              <div className="medicine-alert-item" key={medicine.id}>
+                <div>
+                  <strong>{medicine.name}</strong>
+                  <span>Dose: {medicine.dose}</span>
+                </div>
+                <Button variant="success" onClick={() => markAsTaken(medicine.id)}>
+                  Marcar como tomado
+                </Button>
+              </div>
+            ))}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className="comfortable-action" variant="outline-secondary" onClick={dismissMedicineAlert}>
+            Agora nao
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
