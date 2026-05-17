@@ -162,6 +162,47 @@
   font-size: 1rem;
 }
 
+.next-medicine-card {
+  margin-bottom: 24px;
+  border-left: 6px solid #0d6efd;
+}
+
+.next-medicine-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 26px 28px;
+}
+
+.next-medicine-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #0d6efd;
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.next-medicine-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 1.55rem;
+}
+
+.next-medicine-details {
+  margin: 0;
+  color: #475569;
+  font-size: 1.1rem;
+}
+
+.next-medicine-action {
+  flex: 0 0 auto;
+}
+
 .schedule-card {
   min-height: 260px;
 }
@@ -231,6 +272,16 @@
   .medicine-list-table th,
   .medicine-list-table td {
     padding: 14px 12px;
+  }
+
+  .next-medicine-body {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 22px;
+  }
+
+  .next-medicine-main {
+    font-size: 1.35rem;
   }
 
   .schedule-card {

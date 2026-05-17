@@ -1,12 +1,45 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, Card, Col, Pagination, Row } from "react-bootstrap";
 import { loadMedicines, updateMedicine } from "../data/medicineStorage";
 
 const ITEMS_PER_PAGE = 6;
+const DAY_IN_MINUTES = 24 * 60;
+
+function getMinutesFromTime(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+
+  return hours * 60 + minutes;
+}
+
+function getTimeUntilMedicine(medicineTime, currentTime) {
+  const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+  const medicineMinutes = getMinutesFromTime(medicineTime);
+  const minutesUntil = medicineMinutes >= currentMinutes
+    ? medicineMinutes - currentMinutes
+    : DAY_IN_MINUTES - currentMinutes + medicineMinutes;
+
+  if (minutesUntil === 0) {
+    return "agora";
+  }
+
+  const hours = Math.floor(minutesUntil / 60);
+  const minutes = minutesUntil % 60;
+
+  if (hours === 0) {
+    return `em ${minutes} min`;
+  }
+
+  if (minutes === 0) {
+    return `em ${hours}h`;
+  }
+
+  return `em ${hours}h ${minutes}min`;
+}
 
 function MedicineSchedulePage() {
   const [scheduleMedicines, setScheduleMedicines] = useState(loadMedicines);
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentTime, setCurrentTime] = useState(() => new Date());
 
   const shouldPaginate = scheduleMedicines.length > ITEMS_PER_PAGE;
   const totalPages = Math.ceil(scheduleMedicines.length / ITEMS_PER_PAGE);
@@ -16,6 +49,34 @@ function MedicineSchedulePage() {
     () => scheduleMedicines.slice(pageStartIndex, pageEndIndex),
     [pageEndIndex, pageStartIndex, scheduleMedicines],
   );
+  const nextMedicine = useMemo(() => {
+    const pendingMedicines = scheduleMedicines.filter((medicine) => medicine.status !== "Tomado");
+
+    if (pendingMedicines.length === 0) {
+      return null;
+    }
+
+    const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+
+    return pendingMedicines
+      .map((medicine) => {
+        const medicineMinutes = getMinutesFromTime(medicine.time);
+        const minutesUntil = medicineMinutes >= currentMinutes
+          ? medicineMinutes - currentMinutes
+          : DAY_IN_MINUTES - currentMinutes + medicineMinutes;
+
+        return { ...medicine, minutesUntil };
+      })
+      .sort((firstMedicine, secondMedicine) => firstMedicine.minutesUntil - secondMedicine.minutesUntil)[0];
+  }, [currentTime, scheduleMedicines]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const markAsTaken = (medicineId) => {
     const medicineToUpdate = scheduleMedicines.find((medicine) => medicine.id === medicineId);
@@ -29,6 +90,44 @@ function MedicineSchedulePage() {
 
   return (
     <>
+      {scheduleMedicines.length > 0 && (
+        <Card className="content-card next-medicine-card">
+          <Card.Body className="next-medicine-body">
+            {nextMedicine ? (
+              <>
+                <div>
+                  <span className="next-medicine-label">Proximo medicamento</span>
+                  <div className="next-medicine-main">
+                    <strong>{nextMedicine.name}</strong>
+                    <Badge
+                      bg={nextMedicine.status === "Tomado" ? "success" : "warning"}
+                      text={nextMedicine.status === "Tomado" ? undefined : "dark"}
+                    >
+                      {nextMedicine.status}
+                    </Badge>
+                  </div>
+                  <p className="next-medicine-details">
+                    {nextMedicine.time} - Dose: {nextMedicine.dose} -{" "}
+                    {getTimeUntilMedicine(nextMedicine.time, currentTime)}
+                  </p>
+                </div>
+                <Button
+                  className="schedule-card-button next-medicine-action"
+                  variant="success"
+                  onClick={() => markAsTaken(nextMedicine.id)}
+                >
+                  Marcar como tomado
+                </Button>
+              </>
+            ) : (
+              <div>
+                <span className="next-medicine-label">Proximo medicamento</span>
+                <p className="next-medicine-details mb-0">Todos os medicamentos pendentes foram tomados.</p>
+              </div>
+            )}
+          </Card.Body>
+        </Card>
+      )}
       {scheduleMedicines.length === 0 ? (
         <Card className="content-card comfortable-card">
           <Card.Body className="comfortable-card-body text-center text-muted">
