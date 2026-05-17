@@ -1,19 +1,23 @@
 import { medicines as initialMedicines } from "./medicines";
+import { getTodayKey } from "../utils/medicineSchedule";
 
 const MEDICINES_STORAGE_KEY = "techmed:medicines";
 const MEDICINES_STATUS_DATE_KEY = "techmed:medicines-status-date";
 
-function getTodayKey() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
 function saveStatusDate() {
   localStorage.setItem(MEDICINES_STATUS_DATE_KEY, getTodayKey());
+}
+
+function normalizeUpdatedMedicine(updatedMedicine, currentMedicine) {
+  if (updatedMedicine.status !== "Tomado") {
+    return updatedMedicine;
+  }
+
+  return {
+    ...updatedMedicine,
+    lastTakenAt: currentMedicine?.status === "Tomado" ? currentMedicine.lastTakenAt : new Date().toISOString(),
+    missedSinceDate: undefined,
+  };
 }
 
 function resetDailyStatuses(medicines) {
@@ -29,10 +33,15 @@ function resetDailyStatuses(medicines) {
     return medicines;
   }
 
-  const resetMedicines = medicines.map((medicine) => ({
-    ...medicine,
-    status: "Pendente",
-  }));
+  const resetMedicines = medicines.map((medicine) => {
+    const wasPending = medicine.status !== "Tomado";
+
+    return {
+      ...medicine,
+      status: "Pendente",
+      missedSinceDate: wasPending ? medicine.missedSinceDate || storedStatusDate : undefined,
+    };
+  });
 
   localStorage.setItem(MEDICINES_STORAGE_KEY, JSON.stringify(resetMedicines));
   localStorage.setItem(MEDICINES_STATUS_DATE_KEY, today);
@@ -80,7 +89,24 @@ export function createMedicine(medicineData) {
 
 export function updateMedicine(updatedMedicine) {
   const updatedMedicines = loadMedicines().map((medicine) =>
-    medicine.id === updatedMedicine.id ? updatedMedicine : medicine,
+    medicine.id === updatedMedicine.id ? normalizeUpdatedMedicine(updatedMedicine, medicine) : medicine,
+  );
+
+  saveMedicines(updatedMedicines);
+
+  return updatedMedicines;
+}
+
+export function markMedicineAsTaken(medicineId) {
+  const updatedMedicines = loadMedicines().map((medicine) =>
+    medicine.id === medicineId
+      ? {
+          ...medicine,
+          status: "Tomado",
+          lastTakenAt: new Date().toISOString(),
+          missedSinceDate: undefined,
+        }
+      : medicine,
   );
 
   saveMedicines(updatedMedicines);

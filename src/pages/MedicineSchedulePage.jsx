@@ -1,53 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
-import { Badge, Button, Card, Col, Modal, Pagination, Row } from "react-bootstrap";
-import { loadMedicines, updateMedicine } from "../data/medicineStorage";
+import { Alert, Badge, Button, Card, Col, Modal, Pagination, Row } from "react-bootstrap";
+import { loadMedicines, markMedicineAsTaken } from "../data/medicineStorage";
+import {
+  getFormattedCurrentTime,
+  getMinutesFromTime,
+  getPendingMedicineAlerts,
+  getTimeUntilMedicine,
+  getTodayKey,
+} from "../utils/medicineSchedule";
 
 const ITEMS_PER_PAGE = 6;
-const DAY_IN_MINUTES = 24 * 60;
-
-function getMinutesFromTime(time) {
-  const [hours, minutes] = time.split(":").map(Number);
-
-  return hours * 60 + minutes;
-}
-
-function getFormattedCurrentTime(currentTime) {
-  return currentTime.toTimeString().slice(0, 5);
-}
-
-function getTimeUntilMedicine(medicineTime, currentTime) {
-  const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-  const medicineMinutes = getMinutesFromTime(medicineTime);
-  const minutesUntil = medicineMinutes >= currentMinutes
-    ? medicineMinutes - currentMinutes
-    : DAY_IN_MINUTES - currentMinutes + medicineMinutes;
-
-  if (minutesUntil === 0) {
-    return "agora";
-  }
-
-  const hours = Math.floor(minutesUntil / 60);
-  const minutes = minutesUntil % 60;
-
-  if (hours === 0) {
-    return `em ${minutes} min`;
-  }
-
-  if (minutes === 0) {
-    return `em ${hours}h`;
-  }
-
-  return `em ${hours}h ${minutes}min`;
-}
 
 function MedicineSchedulePage() {
   const [scheduleMedicines, setScheduleMedicines] = useState(loadMedicines);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [dismissedMedicineAlerts, setDismissedMedicineAlerts] = useState([]);
+  const [dismissedOverdueAlerts, setDismissedOverdueAlerts] = useState([]);
 
   const shouldPaginate = scheduleMedicines.length > ITEMS_PER_PAGE;
   const formattedCurrentTime = getFormattedCurrentTime(currentTime);
+  const todayKey = getTodayKey(currentTime);
   const totalPages = Math.ceil(scheduleMedicines.length / ITEMS_PER_PAGE);
   const pageStartIndex = shouldPaginate ? (currentPage - 1) * ITEMS_PER_PAGE : 0;
   const pageEndIndex = shouldPaginate ? pageStartIndex + ITEMS_PER_PAGE : scheduleMedicines.length;
@@ -69,7 +42,7 @@ function MedicineSchedulePage() {
         const medicineMinutes = getMinutesFromTime(medicine.time);
         const minutesUntil = medicineMinutes >= currentMinutes
           ? medicineMinutes - currentMinutes
-          : DAY_IN_MINUTES - currentMinutes + medicineMinutes;
+          : 24 * 60 - currentMinutes + medicineMinutes;
 
         return { ...medicine, minutesUntil };
       })
@@ -84,6 +57,13 @@ function MedicineSchedulePage() {
           !dismissedMedicineAlerts.includes(`${medicine.id}-${formattedCurrentTime}`),
       ),
     [dismissedMedicineAlerts, formattedCurrentTime, scheduleMedicines],
+  );
+  const overdueAlerts = useMemo(
+    () =>
+      getPendingMedicineAlerts(scheduleMedicines, currentTime).filter(
+        (alert) => !dismissedOverdueAlerts.includes(`${alert.id}-${todayKey}`),
+      ),
+    [currentTime, dismissedOverdueAlerts, scheduleMedicines, todayKey],
   );
 
   useEffect(() => {
@@ -101,7 +81,7 @@ function MedicineSchedulePage() {
       return;
     }
 
-    setScheduleMedicines(updateMedicine({ ...medicineToUpdate, status: "Tomado" }));
+    setScheduleMedicines(markMedicineAsTaken(medicineToUpdate.id));
   };
 
   const dismissMedicineAlert = () => {
@@ -109,6 +89,10 @@ function MedicineSchedulePage() {
       ...currentAlerts,
       ...alertMedicines.map((medicine) => `${medicine.id}-${formattedCurrentTime}`),
     ]);
+  };
+
+  const dismissOverdueAlert = (alertId) => {
+    setDismissedOverdueAlerts((currentAlerts) => [...currentAlerts, `${alertId}-${todayKey}`]);
   };
 
   return (
@@ -151,6 +135,25 @@ function MedicineSchedulePage() {
           </Card.Body>
         </Card>
       )}
+      {overdueAlerts.map((alert) => (
+        <Alert
+          className="medicine-overdue-alert"
+          dismissible
+          key={alert.id}
+          onClose={() => dismissOverdueAlert(alert.id)}
+          variant={alert.variant}
+        >
+          <Alert.Heading>{alert.title}</Alert.Heading>
+          <p>{alert.description}</p>
+          <div className="medicine-overdue-list">
+            {alert.medicines.map((medicine) => (
+              <span key={medicine.id}>
+                <strong>{medicine.name}</strong> - {medicine.time} - Dose: {medicine.dose}
+              </span>
+            ))}
+          </div>
+        </Alert>
+      ))}
       {scheduleMedicines.length === 0 ? (
         <Card className="content-card comfortable-card">
           <Card.Body className="comfortable-card-body text-center text-muted">

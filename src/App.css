@@ -238,6 +238,39 @@
   flex: 0 0 auto;
 }
 
+.medicine-overdue-alert {
+  margin-bottom: 24px;
+  border-radius: 8px;
+}
+
+.medicine-overdue-alert .alert-heading {
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+}
+
+.medicine-overdue-alert p {
+  margin-bottom: 12px;
+  font-size: 1.02rem;
+}
+
+.medicine-overdue-list {
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.medicine-overdue-list span {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 1.02rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .schedule-card {
   min-height: 260px;
 }
