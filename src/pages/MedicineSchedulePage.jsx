@@ -16,27 +16,28 @@ function MedicineSchedulePage() {
   };
 
   return (
-    <Row className="g-3">
+    <Row className="g-4">
       {scheduleMedicines.map((medicine) => (
         <Col md={4} key={medicine.id}>
-          <Card className="content-card h-100">
-            <Card.Body>
+          <Card className="content-card schedule-card h-100">
+            <Card.Body className="schedule-card-body">
               <div className="d-flex justify-content-between align-items-start gap-3">
                 <div>
-                  <Card.Title>{medicine.time}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">{medicine.name}</Card.Subtitle>
+                  <Card.Title className="schedule-card-time">{medicine.time}</Card.Title>
+                  <Card.Subtitle className="schedule-card-name text-muted">{medicine.name}</Card.Subtitle>
                 </div>
                 <Badge
+                  className="schedule-card-status"
                   bg={medicine.status === "Tomado" ? "success" : "warning"}
                   text={medicine.status === "Tomado" ? undefined : "dark"}
                 >
                   {medicine.status}
                 </Badge>
               </div>
-              <Card.Text className="mb-3">Dose: {medicine.dose}</Card.Text>
+              <Card.Text className="schedule-card-dose">Dose: {medicine.dose}</Card.Text>
               <Button
+                className="schedule-card-button"
                 variant={medicine.status === "Tomado" ? "outline-success" : "success"}
-                size="sm"
                 disabled={medicine.status === "Tomado"}
                 onClick={() => markAsTaken(medicine.id)}
               >

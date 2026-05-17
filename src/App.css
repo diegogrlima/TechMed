@@ -96,6 +96,47 @@
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
 }
 
+.schedule-card {
+  min-height: 260px;
+}
+
+.schedule-card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+}
+
+.schedule-card-time {
+  margin-bottom: 10px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.schedule-card-name {
+  margin-bottom: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.schedule-card-status {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.schedule-card-dose {
+  margin: 28px 0 24px;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.schedule-card-button {
+  min-height: 48px;
+  margin-top: auto;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .app-shell {
     flex-direction: column;
@@ -111,5 +152,13 @@
 
   .app-main {
     padding: 24px 16px;
+  }
+
+  .schedule-card {
+    min-height: 240px;
+  }
+
+  .schedule-card-body {
+    padding: 24px;
   }
 }
