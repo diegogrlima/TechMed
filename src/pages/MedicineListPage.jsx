@@ -51,35 +51,63 @@ function MedicineListPage() {
     <>
       <Card className="content-card comfortable-card medicine-list-card">
         <Card.Body className="comfortable-card-body">
-          <Table responsive hover className="medicine-list-table align-middle mb-0">
-            <thead>
-              <tr>
-                <th>Medicamento</th>
-                <th>Dosagem</th>
-                <th>Horario</th>
-                <th>Status</th>
-                <th className="text-end">Acoes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {medicineList.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-5 text-center text-muted">
-                    Nenhum medicamento cadastrado.
-                  </td>
-                </tr>
-              ) : (
-                visibleMedicines.map((medicine) => (
-                  <tr key={medicine.id}>
-                    <td>
-                      <span className="medicine-list-name">{medicine.name}</span>
-                      {medicine.notes && (
-                        <span className="medicine-notes-preview">Obs: {medicine.notes}</span>
-                      )}
-                    </td>
-                    <td>{medicine.dose}</td>
-                    <td>{medicine.time}</td>
-                    <td>
+          {medicineList.length === 0 ? (
+            <div className="py-5 text-center text-muted">Nenhum medicamento cadastrado.</div>
+          ) : (
+            <>
+              <Table responsive hover className="medicine-list-table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Medicamento</th>
+                    <th>Dosagem</th>
+                    <th>Horario</th>
+                    <th>Status</th>
+                    <th className="text-end">Acoes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleMedicines.map((medicine) => (
+                    <tr key={medicine.id}>
+                      <td>
+                        <span className="medicine-list-name">{medicine.name}</span>
+                        {medicine.notes && (
+                          <span className="medicine-notes-preview">Obs: {medicine.notes}</span>
+                        )}
+                      </td>
+                      <td>{medicine.dose}</td>
+                      <td>{medicine.time}</td>
+                      <td>
+                        <Badge
+                          className="medicine-list-status"
+                          bg={medicine.status === "Tomado" ? "success" : "warning"}
+                          text={medicine.status === "Tomado" ? undefined : "dark"}
+                        >
+                          {medicine.status}
+                        </Badge>
+                      </td>
+                      <td className="text-end">
+                        <ButtonGroup className="medicine-list-actions">
+                          <Button variant="outline-primary" onClick={() => setEditingMedicine(medicine)}>
+                            Editar
+                          </Button>
+                          <Button variant="outline-danger" onClick={() => setDeletingMedicine(medicine)}>
+                            Excluir
+                          </Button>
+                        </ButtonGroup>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+
+              <div className="medicine-mobile-list">
+                {visibleMedicines.map((medicine) => (
+                  <article className="medicine-mobile-card" key={medicine.id}>
+                    <div className="medicine-mobile-header">
+                      <div>
+                        <span className="medicine-list-name">{medicine.name}</span>
+                        <span className="medicine-mobile-time">{medicine.time}</span>
+                      </div>
                       <Badge
                         className="medicine-list-status"
                         bg={medicine.status === "Tomado" ? "success" : "warning"}
@@ -87,22 +115,24 @@ function MedicineListPage() {
                       >
                         {medicine.status}
                       </Badge>
-                    </td>
-                    <td className="text-end">
-                      <ButtonGroup className="medicine-list-actions">
-                        <Button variant="outline-primary" onClick={() => setEditingMedicine(medicine)}>
-                          Editar
-                        </Button>
-                        <Button variant="outline-danger" onClick={() => setDeletingMedicine(medicine)}>
-                          Excluir
-                        </Button>
-                      </ButtonGroup>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
+                    </div>
+                    <div className="medicine-mobile-details">
+                      <span>Dose: {medicine.dose}</span>
+                      {medicine.notes && <span>Obs: {medicine.notes}</span>}
+                    </div>
+                    <div className="medicine-mobile-actions">
+                      <Button variant="outline-primary" onClick={() => setEditingMedicine(medicine)}>
+                        Editar
+                      </Button>
+                      <Button variant="outline-danger" onClick={() => setDeletingMedicine(medicine)}>
+                        Excluir
+                      </Button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
           {shouldPaginate && (
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mt-4">
               <span className="text-muted">

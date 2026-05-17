@@ -133,6 +133,10 @@
   font-size: 1.04rem;
 }
 
+.medicine-mobile-list {
+  display: none;
+}
+
 .medicine-list-table th {
   padding: 16px 14px;
   color: #334155;
@@ -194,6 +198,51 @@
   min-height: 42px;
   padding: 8px 16px;
   font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.medicine-mobile-card {
+  padding: 18px;
+  border: 1px solid #d9e2ef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.medicine-mobile-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.medicine-mobile-time {
+  display: block;
+  margin-top: 4px;
+  color: #475569;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.medicine-mobile-details {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  color: #475569;
+  font-size: 1.02rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.medicine-mobile-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.medicine-mobile-actions .btn {
+  min-height: 46px;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -392,12 +441,12 @@
   }
 
   .medicine-list-table {
-    font-size: 1rem;
+    display: none;
   }
 
-  .medicine-list-table th,
-  .medicine-list-table td {
-    padding: 14px 12px;
+  .medicine-mobile-list {
+    display: grid;
+    gap: 14px;
   }
 
   .medicine-list-tools {
