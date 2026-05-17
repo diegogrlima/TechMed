@@ -45,31 +45,39 @@ function MedicineListPage() {
               </tr>
             </thead>
             <tbody>
-              {medicineList.map((medicine) => (
-                <tr key={medicine.id}>
-                  <td>{medicine.name}</td>
-                  <td>{medicine.dose}</td>
-                  <td>{medicine.time}</td>
-                  <td>
-                    <Badge
-                      bg={medicine.status === "Tomado" ? "success" : "warning"}
-                      text={medicine.status === "Tomado" ? undefined : "dark"}
-                    >
-                      {medicine.status}
-                    </Badge>
-                  </td>
-                  <td className="text-end">
-                    <ButtonGroup size="sm">
-                      <Button variant="outline-primary" onClick={() => setEditingMedicine(medicine)}>
-                        Editar
-                      </Button>
-                      <Button variant="outline-danger" onClick={() => setDeletingMedicine(medicine)}>
-                        Excluir
-                      </Button>
-                    </ButtonGroup>
+              {medicineList.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-4 text-center text-muted">
+                    Nenhum medicamento cadastrado.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                medicineList.map((medicine) => (
+                  <tr key={medicine.id}>
+                    <td>{medicine.name}</td>
+                    <td>{medicine.dose}</td>
+                    <td>{medicine.time}</td>
+                    <td>
+                      <Badge
+                        bg={medicine.status === "Tomado" ? "success" : "warning"}
+                        text={medicine.status === "Tomado" ? undefined : "dark"}
+                      >
+                        {medicine.status}
+                      </Badge>
+                    </td>
+                    <td className="text-end">
+                      <ButtonGroup size="sm">
+                        <Button variant="outline-primary" onClick={() => setEditingMedicine(medicine)}>
+                          Editar
+                        </Button>
+                        <Button variant="outline-danger" onClick={() => setDeletingMedicine(medicine)}>
+                          Excluir
+                        </Button>
+                      </ButtonGroup>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </Table>
         </Card.Body>
