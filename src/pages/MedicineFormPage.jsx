@@ -1,9 +1,18 @@
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 
 function MedicineFormPage() {
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
   return (
     <Card className="content-card">
       <Card.Body>
+        {showSuccessAlert && (
+          <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible>
+            Medicamento cadastrado com sucesso!
+          </Alert>
+        )}
+
         <Form>
           <Row className="g-3">
             <Col md={6}>
@@ -23,7 +32,7 @@ function MedicineFormPage() {
               <Form.Control as="textarea" rows={3} placeholder="Instrucao de uso, intervalo ou alerta" />
             </Col>
           </Row>
-          <Button className="mt-4" type="button" variant="primary">
+          <Button className="mt-4" type="button" variant="primary" onClick={() => setShowSuccessAlert(true)}>
             Salvar medicamento
           </Button>
         </Form>
