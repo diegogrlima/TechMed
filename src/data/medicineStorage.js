@@ -56,3 +56,9 @@ export function deleteMedicine(medicineId) {
 
   return updatedMedicines;
 }
+
+export function clearMedicines() {
+  saveMedicines([]);
+
+  return [];
+}

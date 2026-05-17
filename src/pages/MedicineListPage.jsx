@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Badge, Button, ButtonGroup, Card, Form, Modal, Pagination, Table } from "react-bootstrap";
-import { deleteMedicine, loadMedicines, updateMedicine } from "../data/medicineStorage";
+import { clearMedicines, deleteMedicine, loadMedicines, updateMedicine } from "../data/medicineStorage";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -9,6 +9,7 @@ function MedicineListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [deletingMedicine, setDeletingMedicine] = useState(null);
+  const [showClearDataModal, setShowClearDataModal] = useState(false);
 
   const shouldPaginate = medicineList.length > ITEMS_PER_PAGE;
   const totalPages = Math.ceil(medicineList.length / ITEMS_PER_PAGE);
@@ -40,6 +41,12 @@ function MedicineListPage() {
     setDeletingMedicine(null);
   };
 
+  const confirmClearData = () => {
+    setMedicineList(clearMedicines());
+    setCurrentPage(1);
+    setShowClearDataModal(false);
+  };
+
   return (
     <>
       <Card className="content-card comfortable-card medicine-list-card">
@@ -57,7 +64,7 @@ function MedicineListPage() {
             <tbody>
               {medicineList.length === 0 ? (
                 <tr>
-                    <td colSpan={5} className="py-5 text-center text-muted">
+                  <td colSpan={5} className="py-5 text-center text-muted">
                     Nenhum medicamento cadastrado.
                   </td>
                 </tr>
@@ -123,6 +130,18 @@ function MedicineListPage() {
                   onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
                 />
               </Pagination>
+            </div>
+          )}
+          {medicineList.length > 0 && (
+            <div className="medicine-list-tools">
+              <span className="text-muted">Use esta opcao para preparar um novo teste.</span>
+              <Button
+                className="medicine-clear-button"
+                variant="outline-danger"
+                onClick={() => setShowClearDataModal(true)}
+              >
+                Limpar dados
+              </Button>
             </div>
           )}
         </Card.Body>
@@ -206,6 +225,29 @@ function MedicineListPage() {
           </Button>
           <Button className="comfortable-action" variant="danger" onClick={confirmDeleteMedicine}>
             Excluir
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showClearDataModal} onHide={() => setShowClearDataModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Limpar dados</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="mb-0">
+            Tem certeza que deseja apagar todos os medicamentos cadastrados neste navegador?
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="comfortable-action"
+            variant="outline-secondary"
+            onClick={() => setShowClearDataModal(false)}
+          >
+            Cancelar
+          </Button>
+          <Button className="comfortable-action" variant="danger" onClick={confirmClearData}>
+            Limpar dados
           </Button>
         </Modal.Footer>
       </Modal>

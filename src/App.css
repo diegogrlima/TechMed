@@ -162,6 +162,23 @@
   font-size: 1rem;
 }
 
+.medicine-list-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.medicine-clear-button {
+  min-height: 42px;
+  padding: 8px 16px;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
 .next-medicine-card {
   margin-bottom: 24px;
   border-left: 6px solid #0d6efd;
@@ -317,6 +334,11 @@
   .medicine-list-table th,
   .medicine-list-table td {
     padding: 14px 12px;
+  }
+
+  .medicine-list-tools {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .next-medicine-body {
