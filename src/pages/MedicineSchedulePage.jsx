@@ -177,6 +177,9 @@ function MedicineSchedulePage() {
                     </Badge>
                   </div>
                   <Card.Text className="schedule-card-dose">Dose: {medicine.dose}</Card.Text>
+                  {medicine.notes && (
+                    <Card.Text className="medicine-notes-text">Obs: {medicine.notes}</Card.Text>
+                  )}
                   <Button
                     className="schedule-card-button"
                     variant={medicine.status === "Tomado" ? "outline-success" : "success"}
@@ -240,6 +243,7 @@ function MedicineSchedulePage() {
                 <div>
                   <strong>{medicine.name}</strong>
                   <span>Dose: {medicine.dose}</span>
+                  {medicine.notes && <span>Obs: {medicine.notes}</span>}
                 </div>
                 <Button variant="success" onClick={() => markAsTaken(medicine.id)}>
                   Marcar como tomado

@@ -71,7 +71,12 @@ function MedicineListPage() {
               ) : (
                 visibleMedicines.map((medicine) => (
                   <tr key={medicine.id}>
-                    <td>{medicine.name}</td>
+                    <td>
+                      <span className="medicine-list-name">{medicine.name}</span>
+                      {medicine.notes && (
+                        <span className="medicine-notes-preview">Obs: {medicine.notes}</span>
+                      )}
+                    </td>
                     <td>{medicine.dose}</td>
                     <td>{medicine.time}</td>
                     <td>
