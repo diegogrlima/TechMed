@@ -32,16 +32,16 @@ function MedicineFormPage() {
   };
 
   return (
-    <Card className="content-card">
-      <Card.Body>
+    <Card className="content-card comfortable-card">
+      <Card.Body className="comfortable-card-body">
         {showSuccessAlert && (
           <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible>
             Medicamento cadastrado com sucesso!
           </Alert>
         )}
 
-        <Form onSubmit={handleSubmit}>
-          <Row className="g-3">
+        <Form className="comfortable-form" onSubmit={handleSubmit}>
+          <Row className="g-4">
             <Col md={6}>
               <Form.Label>Nome do medicamento</Form.Label>
               <Form.Control
@@ -80,7 +80,7 @@ function MedicineFormPage() {
               />
             </Col>
           </Row>
-          <Button className="mt-4" type="submit" variant="primary">
+          <Button className="comfortable-action mt-4" type="submit" variant="primary">
             Salvar medicamento
           </Button>
         </Form>

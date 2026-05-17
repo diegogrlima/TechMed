@@ -42,9 +42,9 @@ function MedicineListPage() {
 
   return (
     <>
-      <Card className="content-card">
-        <Card.Body>
-          <Table responsive hover className="align-middle mb-0">
+      <Card className="content-card comfortable-card medicine-list-card">
+        <Card.Body className="comfortable-card-body">
+          <Table responsive hover className="medicine-list-table align-middle mb-0">
             <thead>
               <tr>
                 <th>Medicamento</th>
@@ -57,7 +57,7 @@ function MedicineListPage() {
             <tbody>
               {medicineList.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-4 text-center text-muted">
+                    <td colSpan={5} className="py-5 text-center text-muted">
                     Nenhum medicamento cadastrado.
                   </td>
                 </tr>
@@ -69,6 +69,7 @@ function MedicineListPage() {
                     <td>{medicine.time}</td>
                     <td>
                       <Badge
+                        className="medicine-list-status"
                         bg={medicine.status === "Tomado" ? "success" : "warning"}
                         text={medicine.status === "Tomado" ? undefined : "dark"}
                       >
@@ -76,7 +77,7 @@ function MedicineListPage() {
                       </Badge>
                     </td>
                     <td className="text-end">
-                      <ButtonGroup size="sm">
+                      <ButtonGroup className="medicine-list-actions">
                         <Button variant="outline-primary" onClick={() => setEditingMedicine(medicine)}>
                           Editar
                         </Button>
@@ -98,6 +99,7 @@ function MedicineListPage() {
               </span>
               <Pagination className="mb-0">
                 <Pagination.Prev
+                  className="medicine-list-page-link"
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
                 />
@@ -106,6 +108,7 @@ function MedicineListPage() {
 
                   return (
                     <Pagination.Item
+                      className="medicine-list-page-link"
                       key={page}
                       active={page === currentPage}
                       onClick={() => setCurrentPage(page)}
@@ -115,6 +118,7 @@ function MedicineListPage() {
                   );
                 })}
                 <Pagination.Next
+                  className="medicine-list-page-link"
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
                 />
@@ -130,7 +134,7 @@ function MedicineListPage() {
         </Modal.Header>
         <Modal.Body>
           {editingMedicine && (
-            <Form>
+            <Form className="comfortable-form">
               <Form.Group className="mb-3" controlId="editMedicineName">
                 <Form.Label>Nome do medicamento</Form.Label>
                 <Form.Control
@@ -176,10 +180,10 @@ function MedicineListPage() {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setEditingMedicine(null)}>
+          <Button className="comfortable-action" variant="outline-secondary" onClick={() => setEditingMedicine(null)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={saveEditedMedicine}>
+          <Button className="comfortable-action" variant="primary" onClick={saveEditedMedicine}>
             Salvar
           </Button>
         </Modal.Footer>
@@ -197,10 +201,10 @@ function MedicineListPage() {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setDeletingMedicine(null)}>
+          <Button className="comfortable-action" variant="outline-secondary" onClick={() => setDeletingMedicine(null)}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={confirmDeleteMedicine}>
+          <Button className="comfortable-action" variant="danger" onClick={confirmDeleteMedicine}>
             Excluir
           </Button>
         </Modal.Footer>
