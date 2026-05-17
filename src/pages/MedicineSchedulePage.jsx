@@ -1,10 +1,21 @@
-import { Badge, Card, Col, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Badge, Button, Card, Col, Row } from "react-bootstrap";
 import { medicines } from "../data/medicines";
 
 function MedicineSchedulePage() {
+  const [scheduleMedicines, setScheduleMedicines] = useState(medicines);
+
+  const markAsTaken = (medicineId) => {
+    setScheduleMedicines((currentMedicines) =>
+      currentMedicines.map((medicine) =>
+        medicine.id === medicineId ? { ...medicine, status: "Tomado" } : medicine,
+      ),
+    );
+  };
+
   return (
     <Row className="g-3">
-      {medicines.map((medicine) => (
+      {scheduleMedicines.map((medicine) => (
         <Col md={4} key={medicine.id}>
           <Card className="content-card h-100">
             <Card.Body>
@@ -20,7 +31,15 @@ function MedicineSchedulePage() {
                   {medicine.status}
                 </Badge>
               </div>
-              <Card.Text>Dose: {medicine.dose}</Card.Text>
+              <Card.Text className="mb-3">Dose: {medicine.dose}</Card.Text>
+              <Button
+                variant={medicine.status === "Tomado" ? "outline-success" : "success"}
+                size="sm"
+                disabled={medicine.status === "Tomado"}
+                onClick={() => markAsTaken(medicine.id)}
+              >
+                Tomado
+              </Button>
             </Card.Body>
           </Card>
         </Col>
