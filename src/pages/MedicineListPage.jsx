@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Badge, Button, ButtonGroup, Card, Form, Modal, Table } from "react-bootstrap";
-import { medicines } from "../data/medicines";
+import { deleteMedicine, loadMedicines, updateMedicine } from "../data/medicineStorage";
 
 function MedicineListPage() {
-  const [medicineList, setMedicineList] = useState(medicines);
+  const [medicineList, setMedicineList] = useState(loadMedicines);
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [deletingMedicine, setDeletingMedicine] = useState(null);
 
@@ -15,18 +15,12 @@ function MedicineListPage() {
   };
 
   const saveEditedMedicine = () => {
-    setMedicineList((currentMedicines) =>
-      currentMedicines.map((medicine) =>
-        medicine.id === editingMedicine.id ? editingMedicine : medicine,
-      ),
-    );
+    setMedicineList(updateMedicine(editingMedicine));
     setEditingMedicine(null);
   };
 
   const confirmDeleteMedicine = () => {
-    setMedicineList((currentMedicines) =>
-      currentMedicines.filter((medicine) => medicine.id !== deletingMedicine.id),
-    );
+    setMedicineList(deleteMedicine(deletingMedicine.id));
     setDeletingMedicine(null);
   };
 
@@ -121,6 +115,15 @@ function MedicineListPage() {
                   <option value="Pendente">Pendente</option>
                   <option value="Tomado">Tomado</option>
                 </Form.Select>
+              </Form.Group>
+              <Form.Group className="mt-3" controlId="editMedicineNotes">
+                <Form.Label>Observacoes</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={editingMedicine.notes || ""}
+                  onChange={(event) => handleEditChange("notes", event.target.value)}
+                />
               </Form.Group>
             </Form>
           )}

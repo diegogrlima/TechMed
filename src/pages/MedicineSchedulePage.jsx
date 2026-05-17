@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Badge, Button, Card, Col, Row } from "react-bootstrap";
-import { medicines } from "../data/medicines";
+import { loadMedicines, updateMedicine } from "../data/medicineStorage";
 
 function MedicineSchedulePage() {
-  const [scheduleMedicines, setScheduleMedicines] = useState(medicines);
+  const [scheduleMedicines, setScheduleMedicines] = useState(loadMedicines);
 
   const markAsTaken = (medicineId) => {
-    setScheduleMedicines((currentMedicines) =>
-      currentMedicines.map((medicine) =>
-        medicine.id === medicineId ? { ...medicine, status: "Tomado" } : medicine,
-      ),
-    );
+    const medicineToUpdate = scheduleMedicines.find((medicine) => medicine.id === medicineId);
+
+    if (!medicineToUpdate) {
+      return;
+    }
+
+    setScheduleMedicines(updateMedicine({ ...medicineToUpdate, status: "Tomado" }));
   };
 
   return (
